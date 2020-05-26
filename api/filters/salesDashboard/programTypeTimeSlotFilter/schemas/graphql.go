@@ -16,10 +16,10 @@ var DashboardFields = graphql.NewObject(
 			"date": &graphql.Field{
 				Type: graphql.String,
 			},
-			"advertiser": &graphql.Field{
+			"advertiser_group": &graphql.Field{
 				Type: graphql.String,
 			},
-			"channel": &graphql.Field{
+			"channel_name": &graphql.Field{
 				Type: graphql.String,
 			},
 			"region": &graphql.Field{

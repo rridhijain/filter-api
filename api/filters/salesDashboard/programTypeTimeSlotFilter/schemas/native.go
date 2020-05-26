@@ -4,8 +4,8 @@ type ProgramTypeAndTimeSlot struct {
 	ProgramType string `json:"program_type"`
 	TimeSlot    string `json:"time_slot"`
 	Date        string `json:"date"`
-	Advertiser  string `json:"advertiser"`
-	Channel     string `json:"channel"`
+	AdvertiserGroup  string `json:"advertiser_group"`
+	ChannelName     string `json:"channel_name"`
 	Region      string `json:"region"`
 }
 

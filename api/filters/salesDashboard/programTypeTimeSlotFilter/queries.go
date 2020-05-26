@@ -11,7 +11,7 @@ import (
 // Export method to get dashboard filters
 func GetDashboardFilters(startDates []string, endDates []string, db *postgres.PostgresDatabase) []schemas.ProgramTypeAndTimeSlot {
 
-	sqlStatement := "SELECT program_type, time_slot, date, advertiser, channel, region FROM program_info " + whereCondition(startDates, endDates)
+	sqlStatement := "SELECT program_type, time_slot, date, advertiser_group, channel_name, region FROM ent_fact_revenue_advertiser_mappings " + whereCondition(startDates, endDates)
 	fmt.Println(sqlStatement)
 	rows, err := db.Query(sqlStatement)
 	filters := make([]schemas.ProgramTypeAndTimeSlot, 0)
@@ -26,7 +26,7 @@ func GetDashboardFilters(startDates []string, endDates []string, db *postgres.Po
 	for rows.Next() {
 		var filter schemas.ProgramTypeAndTimeSlot 
 		rows.Scan(&filter.ProgramType, 
-			&filter.TimeSlot, &filter.Date, &filter.Advertiser, &filter.Channel, &filter.Region)
+			&filter.TimeSlot, &filter.Date, &filter.AdvertiserGroup, &filter.ChannelName, &filter.Region)
 		filters = append(filters, filter)
 	}
 	return filters

@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Setup() config.Configurations{
+func Setup() config.Configurations {
 	// Set the file name of the configurations file
 	viper.SetConfigName("config")
 

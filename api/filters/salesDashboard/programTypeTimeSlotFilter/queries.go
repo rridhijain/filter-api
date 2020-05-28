@@ -63,6 +63,7 @@ func GetDashboardFilters(startDates []string, endDates []string, db *postgres.Po
 	}
 	filters1.ProgramType = programTypeArr
 	filters1.TimeSlot = timeSlotArr
+	fmt.Println(filters1)
 	return filters1
 }
 

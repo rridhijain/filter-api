@@ -1,12 +1,13 @@
 package schemas
 
+import "database/sql"
+
 type ProgramTypeAndTimeSlot struct {
-	ProgramType     string `json:"program_type"`
-	TimeSlot        string `json:"time_slot"`
-	Date            string `json:"date"`
-	AdvertiserGroup string `json:"advertiser_group"`
-	ChannelName     string `json:"channel_name"`
-	Region          string `json:"region"`
+	ProgramType     sql.NullString `json:"program_type"`
+	TimeSlot        sql.NullString `json:"time_slot"`
+	AdvertiserGroup string         `json:"advertiser_group"`
+	ChannelName     sql.NullString `json:"channel_name"`
+	Region          sql.NullString `json:"region"`
 }
 
 type ProgramTypeAndTimeSlotUpdated struct {
@@ -15,23 +16,23 @@ type ProgramTypeAndTimeSlotUpdated struct {
 }
 
 type ProgramTypeStruct struct {
-	Label  string        `json:"label"`
-	Values []ChannelName `json:"values"`
+	Label    string        `json:"program_type"`
+	Channels []ChannelName `json:"channels"`
 }
 
 type TimeSlotStruct struct {
-	Label  string        `json:"label"`
-	Values []ChannelName `json:"values"`
+	Label    string        `json:"time_slot"`
+	Channels []ChannelName `json:"channels"`
 }
 
 type ChannelName struct {
-	Label  string   `json:"label"`
-	Values []Region `json:"values"`
+	Label   string   `json:"label"`
+	Regions []Region `json:"regions"`
 }
 
 type Region struct {
-	Label  string   `json:"label"`
-	Values []string `json:"values"`
+	Label       string   `json:"label"`
+	Advertisers []string `json:"advertisers"`
 }
 
 type Period struct {

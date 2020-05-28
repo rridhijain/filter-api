@@ -5,10 +5,10 @@ import (
 	// "fmt"
 	"net/http"
 
+	"github.com/graphql-go/graphql"
+	"github.com/rridhijain/filter-api/api/filters/salesDashboard/programTypeTimeSlotFilter/schemas"
 	"github.com/rridhijain/filter-api/utils/postgres"
 	"github.com/rridhijain/filter-api/utils/services"
-	"github.com/rridhijain/filter-api/api/filters/salesDashboard/programTypeTimeSlotFilter/schemas"
-	"github.com/graphql-go/graphql"
 )
 
 // This is the trial documentation
@@ -22,7 +22,7 @@ func GetResponse(db *postgres.PostgresDatabase) func(w http.ResponseWriter, r *h
 				Name: "Query",
 				Fields: graphql.Fields{
 					"filters": &graphql.Field{
-						Type: graphql.NewList(schemas.DashboardFields),
+						Type: schemas.DashboardFields,
 						Args: graphql.FieldConfigArgument{
 							"period_dates": &graphql.ArgumentConfig{
 								Type: graphql.NewList(schemas.PeriodType),
@@ -41,6 +41,6 @@ func GetResponse(db *postgres.PostgresDatabase) func(w http.ResponseWriter, r *h
 			},
 		)
 		result := services.ExecuteQuery(r.URL.Query().Get("query"), schema)
-		json.NewEncoder(w).Encode(result)	
+		json.NewEncoder(w).Encode(result)
 	}
 }

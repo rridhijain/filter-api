@@ -8,22 +8,66 @@ var DashboardFields = graphql.NewObject(
 		Name: "Dashboard_Fields",
 		Fields: graphql.Fields{
 			"program_type": &graphql.Field{
+				Type: graphql.NewList(programTypeFields),
+			},
+			"time_slot": &graphql.Field{
+				Type: graphql.NewList(timeSlotFields),
+			},
+		},
+	},
+)
+
+var programTypeFields = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "Program_Type_Fields",
+		Fields: graphql.Fields{
+			"program_type": &graphql.Field{
 				Type: graphql.String,
 			},
+			"channels": &graphql.Field{
+				Type: graphql.NewList(channelFields),
+			},
+		},
+	},
+)
+
+var timeSlotFields = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "Time_Slot_Fields",
+		Fields: graphql.Fields{
 			"time_slot": &graphql.Field{
 				Type: graphql.String,
 			},
-			"date": &graphql.Field{
+			"channels": &graphql.Field{
+				Type: graphql.NewList(channelFields),
+			},
+		},
+	},
+)
+
+var channelFields = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "Channel_Fields",
+		Fields: graphql.Fields{
+			"label": &graphql.Field{
 				Type: graphql.String,
 			},
-			"advertiser_group": &graphql.Field{
+			"regions": &graphql.Field{
+				Type: graphql.NewList(regionFields),
+			},
+		},
+	},
+)
+
+var regionFields = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "Region_Fields",
+		Fields: graphql.Fields{
+			"label": &graphql.Field{
 				Type: graphql.String,
 			},
-			"channel_name": &graphql.Field{
-				Type: graphql.String,
-			},
-			"region": &graphql.Field{
-				Type: graphql.String,
+			"advertisers": &graphql.Field{
+				Type: graphql.NewList(graphql.String),
 			},
 		},
 	},

@@ -56,8 +56,8 @@ func GetDashboardFilters(startDates []string, endDates []string, db *postgres.Po
 			timeSlot := getTimeSlotObj(channelNameObjList, programTypeAndTimeSlot.TimeSlot.String)
 			timeSlotArr = append(timeSlotArr, timeSlot)
 		} else {
-			programTypeArr = formatProgramTypeResponse(programTypeAndTimeSlot, advObj)
-			timeSlotArr = formatTimeSlotResponse(programTypeAndTimeSlot, advObj)
+			programTypeArr = append(programTypeArr, formatProgramTypeResponse(programTypeAndTimeSlot, advObj)...)
+			timeSlotArr = append(timeSlotArr, formatTimeSlotResponse(programTypeAndTimeSlot, advObj)...)
 		}
 		index++
 	}

@@ -47,11 +47,8 @@ func (r *Resolver) DashboardFilterResolver(p schemas.InputPeriod) (schemas.Progr
 	startDates = append(startDates, deviationPeriodStartDates...)
 	endDates = append(endDates, deviationPeriodEndDates...)
 
-	//if periodDatesPresent || deviationPeriodPresent {
 	result := GetDashboardFiltersUpdate(startDates, endDates, r.PostgresDatabase)
 	return result, nil
-	//	}
-	//	return schemas.ProgramTypeAndTimeSlotUpdated1{}, nil
 }
 
 func getDatesArrUp(periods []schemas.Period) ([]string, []string) {

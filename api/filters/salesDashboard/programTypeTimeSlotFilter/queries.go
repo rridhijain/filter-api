@@ -3,6 +3,7 @@ package programTypeTimeSlotFilter
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/rridhijain/filter-api/api/filters/salesDashboard/programTypeTimeSlotFilter/schemas"
 	"github.com/rridhijain/filter-api/utils/postgres"
@@ -103,17 +104,18 @@ func GetDashboardFiltersUpdate(startDates []string, endDates []string, db *postg
 
 		if index == 0 {
 			regionObj := make(map[string][]string, 0)
-			regionObj[programTypeAndTimeSlot.Region.String] = advObj
+			regionObj[strings.ToUpper(programTypeAndTimeSlot.Region.String)] = advObj
 			channelNameObj := make(map[string]map[string][]string, 0)
 			channelNameObj[programTypeAndTimeSlot.ChannelName.String] = regionObj
-			progamTypeMap[programTypeAndTimeSlot.ProgramType.String] = channelNameObj
-			timeSlotMap[programTypeAndTimeSlot.TimeSlot.String] = channelNameObj
+			progamTypeMap[strings.Title(programTypeAndTimeSlot.ProgramType.String)] = channelNameObj
+			timeSlotMap[strings.ToUpper(programTypeAndTimeSlot.TimeSlot.String)] = channelNameObj
 		} else {
-			programType := progamTypeMap[programTypeAndTimeSlot.ProgramType.String]
+			programType := progamTypeMap[strings.Title(programTypeAndTimeSlot.ProgramType.String)]
+			timeSlot := timeSlotMap[strings.ToUpper(programTypeAndTimeSlot.TimeSlot.String)]
 			if programType != nil {
 				channelType := programType[programTypeAndTimeSlot.ChannelName.String]
 				if channelType != nil {
-					region := channelType[programTypeAndTimeSlot.Region.String]
+					region := channelType[strings.ToUpper(programTypeAndTimeSlot.Region.String)]
 					if region != nil {
 						insertValue := true
 						for _, values := range region {
@@ -127,18 +129,48 @@ func GetDashboardFiltersUpdate(startDates []string, endDates []string, db *postg
 					} else {
 						region = advObj
 					}
-					channelType[programTypeAndTimeSlot.Region.String] = region
+					channelType[strings.ToUpper(programTypeAndTimeSlot.Region.String)] = region
 				} else {
 					regionObj := make(map[string][]string, 0)
-					regionObj[programTypeAndTimeSlot.Region.String] = advObj
+					regionObj[strings.ToUpper(programTypeAndTimeSlot.Region.String)] = advObj
 					programType[programTypeAndTimeSlot.ChannelName.String] = regionObj
 				}
 			} else {
 				regionObj := make(map[string][]string, 0)
-				regionObj[programTypeAndTimeSlot.Region.String] = advObj
+				regionObj[strings.ToUpper(programTypeAndTimeSlot.Region.String)] = advObj
 				channelNameObj := make(map[string]map[string][]string, 0)
 				channelNameObj[programTypeAndTimeSlot.ChannelName.String] = regionObj
-				progamTypeMap[programTypeAndTimeSlot.ProgramType.String] = channelNameObj
+				progamTypeMap[strings.Title(programTypeAndTimeSlot.ProgramType.String)] = channelNameObj
+			}
+			if timeSlot != nil {
+				channelType := timeSlot[programTypeAndTimeSlot.ChannelName.String]
+				if channelType != nil {
+					region := channelType[strings.ToUpper(programTypeAndTimeSlot.Region.String)]
+					if region != nil {
+						insertValue := true
+						for _, values := range region {
+							if values == advObj[0] {
+								insertValue = false
+							}
+						}
+						if insertValue == true {
+							region = append(region, advObj...)
+						}
+					} else {
+						region = advObj
+					}
+					channelType[strings.ToUpper(programTypeAndTimeSlot.Region.String)] = region
+				} else {
+					regionObj := make(map[string][]string, 0)
+					regionObj[strings.ToUpper(programTypeAndTimeSlot.Region.String)] = advObj
+					timeSlot[programTypeAndTimeSlot.ChannelName.String] = regionObj
+				}
+			} else {
+				regionObj := make(map[string][]string, 0)
+				regionObj[strings.ToUpper(programTypeAndTimeSlot.Region.String)] = advObj
+				channelNameObj := make(map[string]map[string][]string, 0)
+				channelNameObj[programTypeAndTimeSlot.ChannelName.String] = regionObj
+				timeSlotMap[strings.ToUpper(programTypeAndTimeSlot.TimeSlot.String)] = channelNameObj
 			}
 		}
 		index++

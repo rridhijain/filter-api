@@ -15,6 +15,7 @@ func main() {
 	defer db.CloseConnection()
 	fmt.Println("Application Running")
 	http.HandleFunc("/graphql", programTypeTimeSlotFilter.GetResponse(db))
+	http.HandleFunc("/sideFilters", programTypeTimeSlotFilter.GetFilters(db))
 
 	configuration := viper.Setup()
 	http.ListenAndServe(":"+strconv.Itoa(configuration.Server.Port), nil)

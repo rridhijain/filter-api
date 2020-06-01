@@ -21,7 +21,7 @@ var programTypeFields = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Program_Type_Fields",
 		Fields: graphql.Fields{
-			"program_type": &graphql.Field{
+			"label": &graphql.Field{
 				Type: graphql.String,
 			},
 			"channels": &graphql.Field{
@@ -35,7 +35,7 @@ var timeSlotFields = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Time_Slot_Fields",
 		Fields: graphql.Fields{
-			"time_slot": &graphql.Field{
+			"label": &graphql.Field{
 				Type: graphql.String,
 			},
 			"channels": &graphql.Field{

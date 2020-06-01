@@ -16,19 +16,19 @@ func GetDashboardFilters(startDates []string, endDates []string, db *postgres.Po
 			, time_slot, advertiser_group, channel_name, region 
 		FROM ent_fact_revenue_advertiser_mappings` +
 		whereCondition(startDates, endDates) +
-		` and lower(time_slot) in ('pt', 'npt')
-			and lower(region) in ('south', 'north', 'east', 'west')
+		` and time_slot is not null
+			and region is not null
 		GROUP BY program_type
 		, time_slot, advertiser_group, channel_name, region`
 
 	fmt.Println(sqlStatement)
 	rows, err := db.Query(sqlStatement)
-	var filters1 schemas.ProgramTypeAndTimeSlotUpdated
+	var filters schemas.ProgramTypeAndTimeSlotUpdated
 	switch err {
 	case sql.ErrNoRows:
 		fmt.Println("No rows were returned!")
 	case nil:
-		fmt.Println(filters1)
+		fmt.Println(filters)
 	default:
 		panic(err)
 	}
@@ -61,10 +61,91 @@ func GetDashboardFilters(startDates []string, endDates []string, db *postgres.Po
 		}
 		index++
 	}
-	filters1.ProgramType = programTypeArr
-	filters1.TimeSlot = timeSlotArr
-	fmt.Println(filters1)
-	return filters1
+	filters.ProgramType = programTypeArr
+	filters.TimeSlot = timeSlotArr
+	return filters
+}
+
+func GetDashboardFiltersUpdate(startDates []string, endDates []string, db *postgres.PostgresDatabase) schemas.ProgramTypeAndTimeSlotUpdated1 {
+	sqlStatement := `
+		SELECT 
+			program_type
+			, time_slot, advertiser_group, channel_name, region 
+		FROM ent_fact_revenue_advertiser_mappings` +
+		whereCondition(startDates, endDates) +
+		` and time_slot is not null
+			and region is not null
+		GROUP BY program_type
+		, time_slot, advertiser_group, channel_name, region`
+
+	fmt.Println(sqlStatement)
+	rows, err := db.Query(sqlStatement)
+	var filters schemas.ProgramTypeAndTimeSlotUpdated1
+	switch err {
+	case sql.ErrNoRows:
+		fmt.Println("No rows were returned!")
+	case nil:
+		fmt.Println(filters)
+	default:
+		panic(err)
+	}
+	timeSlotMap := make(map[string]map[string]map[string][]string)
+	progamTypeMap := make(map[string]map[string]map[string][]string)
+
+	index := 0
+	for rows.Next() {
+		var programTypeAndTimeSlot schemas.ProgramTypeAndTimeSlot
+
+		rows.Scan(&programTypeAndTimeSlot.ProgramType, &programTypeAndTimeSlot.TimeSlot, &programTypeAndTimeSlot.AdvertiserGroup, &programTypeAndTimeSlot.ChannelName, &programTypeAndTimeSlot.Region)
+
+		advObj := make([]string, 0)
+		advObj = append(advObj, programTypeAndTimeSlot.AdvertiserGroup)
+
+		if index == 0 {
+			regionObj := make(map[string][]string, 0)
+			regionObj[programTypeAndTimeSlot.Region.String] = advObj
+			channelNameObj := make(map[string]map[string][]string, 0)
+			channelNameObj[programTypeAndTimeSlot.ChannelName.String] = regionObj
+			progamTypeMap[programTypeAndTimeSlot.ProgramType.String] = channelNameObj
+			timeSlotMap[programTypeAndTimeSlot.TimeSlot.String] = channelNameObj
+		} else {
+			programType := progamTypeMap[programTypeAndTimeSlot.ProgramType.String]
+			if programType != nil {
+				channelType := programType[programTypeAndTimeSlot.ChannelName.String]
+				if channelType != nil {
+					region := channelType[programTypeAndTimeSlot.Region.String]
+					if region != nil {
+						insertValue := true
+						for _, values := range region {
+							if values == advObj[0] {
+								insertValue = false
+							}
+						}
+						if insertValue == true {
+							region = append(region, advObj...)
+						}
+					} else {
+						region = advObj
+					}
+					channelType[programTypeAndTimeSlot.Region.String] = region
+				} else {
+					regionObj := make(map[string][]string, 0)
+					regionObj[programTypeAndTimeSlot.Region.String] = advObj
+					programType[programTypeAndTimeSlot.ChannelName.String] = regionObj
+				}
+			} else {
+				regionObj := make(map[string][]string, 0)
+				regionObj[programTypeAndTimeSlot.Region.String] = advObj
+				channelNameObj := make(map[string]map[string][]string, 0)
+				channelNameObj[programTypeAndTimeSlot.ChannelName.String] = regionObj
+				progamTypeMap[programTypeAndTimeSlot.ProgramType.String] = channelNameObj
+			}
+		}
+		index++
+	}
+	filters.ProgramType = progamTypeMap
+	filters.TimeSlot = timeSlotMap
+	return filters
 }
 
 func whereCondition(startDates []string, endDates []string) string {

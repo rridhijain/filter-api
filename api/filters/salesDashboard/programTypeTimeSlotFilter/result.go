@@ -2,6 +2,9 @@ package programTypeTimeSlotFilter
 
 import (
 	"encoding/json"
+	"fmt"
+	"html"
+
 	// "fmt"
 	"net/http"
 
@@ -42,5 +45,28 @@ func GetResponse(db *postgres.PostgresDatabase) func(w http.ResponseWriter, r *h
 		)
 		result := services.ExecuteQuery(r.URL.Query().Get("query"), schema)
 		json.NewEncoder(w).Encode(result)
+	}
+}
+
+// GetFilters api is used to get cyclic dashboard filters
+func GetFilters(db *postgres.PostgresDatabase) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		resolver := &Resolver{db}
+
+		decoder := json.NewDecoder(r.Body)
+		var t schemas.InputPeriod
+		err := decoder.Decode(&t)
+		if err != nil {
+			panic(err)
+		}
+		result, err := resolver.DashboardFilterResolver(t)
+		fmt.Println(result)
+		fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(result); err != nil {
+			panic(err)
+		}
 	}
 }

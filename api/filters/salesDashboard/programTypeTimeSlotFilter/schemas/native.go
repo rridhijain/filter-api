@@ -39,3 +39,13 @@ type Period struct {
 	StartDate string `json:"start_date"`
 	EndDate   string `json:"end_date"`
 }
+
+type InputPeriod struct {
+	PeriodDates     []Period `json:"period_dates"`
+	DeviationPeriod []Period `json:"deviation_period"`
+}
+
+type ProgramTypeAndTimeSlotUpdated1 struct {
+	ProgramType map[string]map[string]map[string][]string `json:"program_type"`
+	TimeSlot    map[string]map[string]map[string][]string `json:"time_slot"`
+}

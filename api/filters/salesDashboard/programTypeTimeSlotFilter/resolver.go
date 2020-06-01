@@ -2,6 +2,7 @@ package programTypeTimeSlotFilter
 
 import (
 	"github.com/graphql-go/graphql"
+	"github.com/rridhijain/filter-api/api/filters/salesDashboard/programTypeTimeSlotFilter/schemas"
 	"github.com/rridhijain/filter-api/utils/postgres"
 )
 
@@ -33,6 +34,32 @@ func getDatesArr(periods []interface{}) ([]string, []string) {
 	for _, value := range periods {
 		startDates = append(startDates, value.(map[string]interface{})["start_date"].(string))
 		endDates = append(endDates, value.(map[string]interface{})["end_date"].(string))
+	}
+	return startDates, endDates
+}
+
+func (r *Resolver) DashboardFilterResolver(p schemas.InputPeriod) (schemas.ProgramTypeAndTimeSlotUpdated1, error) {
+	periodDates := p.PeriodDates
+	deviationPeriod := p.DeviationPeriod
+
+	startDates, endDates := getDatesArrUp(periodDates)
+	deviationPeriodStartDates, deviationPeriodEndDates := getDatesArrUp(deviationPeriod)
+	startDates = append(startDates, deviationPeriodStartDates...)
+	endDates = append(endDates, deviationPeriodEndDates...)
+
+	//if periodDatesPresent || deviationPeriodPresent {
+	result := GetDashboardFiltersUpdate(startDates, endDates, r.PostgresDatabase)
+	return result, nil
+	//	}
+	//	return schemas.ProgramTypeAndTimeSlotUpdated1{}, nil
+}
+
+func getDatesArrUp(periods []schemas.Period) ([]string, []string) {
+	startDates := make([]string, 0)
+	endDates := make([]string, 0)
+	for _, value := range periods {
+		startDates = append(startDates, value.StartDate)
+		endDates = append(endDates, value.EndDate)
 	}
 	return startDates, endDates
 }

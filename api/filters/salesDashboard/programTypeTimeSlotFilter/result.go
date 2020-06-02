@@ -3,7 +3,6 @@ package programTypeTimeSlotFilter
 import (
 	"encoding/json"
 	"fmt"
-	"html"
 
 	// "fmt"
 	"net/http"
@@ -62,7 +61,6 @@ func GetFilters(db *postgres.PostgresDatabase) func(w http.ResponseWriter, r *ht
 		}
 		result, err := resolver.DashboardFilterResolver(t)
 		fmt.Println(result)
-		fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(result); err != nil {

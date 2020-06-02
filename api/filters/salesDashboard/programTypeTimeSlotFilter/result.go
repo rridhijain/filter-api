@@ -62,7 +62,7 @@ func GetFilters(db *postgres.PostgresDatabase) func(w http.ResponseWriter, r *ht
 		result, err := resolver.DashboardFilterResolver(t)
 		fmt.Println(result)
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(http.StatusOK)
+		//w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(result); err != nil {
 			panic(err)
 		}

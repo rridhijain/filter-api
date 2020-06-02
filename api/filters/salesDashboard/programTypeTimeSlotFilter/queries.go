@@ -74,8 +74,9 @@ func GetDashboardFiltersUpdate(startDates []string, endDates []string, db *postg
 			, time_slot, advertiser_group, channel_name, region 
 		FROM ent_fact_revenue_advertiser_mappings` +
 		whereCondition(startDates, endDates) +
-		` and time_slot is not null
+		` and lower(time_slot) in ('pt', 'npt')
 			and region is not null
+			and lower(program_type) in ('impact', 'regular')
 		GROUP BY program_type
 		, time_slot, advertiser_group, channel_name, region`
 
